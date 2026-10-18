@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Android build/native
+.externalNativeBuild/
+.cxx/
+captures/
+
+# APK / App Bundle
+*.apk
+*.aab
+
+# Gemini / Android Studio agent generated files
+.agent/
+.artifacts/
+
+# OS files
+.DS_Store
+Thumbs.db
