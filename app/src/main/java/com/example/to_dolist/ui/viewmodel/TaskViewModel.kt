@@ -117,6 +117,20 @@ class TaskViewModel(
             initialValue = emptyList()
         )
 
+    init {
+        viewModelScope.launch {
+            repository.allTasks.collect { allTasks ->
+                val currentSelected = _selectedTask.value
+                if (currentSelected != null) {
+                    val matchingTask = allTasks.find { it.id == currentSelected.id }
+                    if (matchingTask != currentSelected) {
+                        _selectedTask.value = matchingTask
+                    }
+                }
+            }
+        }
+    }
+
     val tasks: StateFlow<List<Task>> = combine(
         repository.allTasks,
         _selectedSmartSection,

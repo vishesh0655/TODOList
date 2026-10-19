@@ -2,6 +2,7 @@ package com.example.to_dolist.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
@@ -25,7 +26,8 @@ fun TaskDetailScreen(
     onDeleteTask: (Task) -> Unit,
     onToggleCompletion: (Task) -> Unit,
     onToggleImportance: (Task) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBackClick: (() -> Unit)? = null
 ) {
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
@@ -80,21 +82,40 @@ fun TaskDetailScreen(
                 // Top Action Bar inside detail
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { onToggleImportance(task) }) {
-                        Icon(
-                            imageVector = if (task.isImportant) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                            contentDescription = "Toggle Importance",
-                            tint = if (task.isImportant) Color(0xFFFFC107) else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    if (onBackClick != null) {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Navigate back"
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.width(1.dp))
                     }
-                    IconButton(onClick = { onEditTask(task) }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit Task")
-                    }
-                    IconButton(onClick = { showDeleteConfirmDialog = true }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete Task", tint = MaterialTheme.colorScheme.error)
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { onToggleImportance(task) }) {
+                            Icon(
+                                imageVector = if (task.isImportant) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                                contentDescription = "Toggle Importance",
+                                tint = if (task.isImportant) Color(0xFFFFC107) else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(onClick = { onEditTask(task) }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Task")
+                        }
+                        IconButton(onClick = { showDeleteConfirmDialog = true }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete Task",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
 

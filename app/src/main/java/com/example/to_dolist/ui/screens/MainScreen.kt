@@ -1,5 +1,6 @@
 package com.example.to_dolist.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -47,12 +48,21 @@ fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val navigator = rememberListDetailPaneScaffoldNavigator<Long>()
+    val canNavigateBack = navigator.canNavigateBack()
+
+    BackHandler(enabled = canNavigateBack) {
+        scope.launch {
+            navigator.navigateBack()
+        }
+        viewModel.selectTask(null)
+    }
 
     // Snackbar for Undo Delete
     LaunchedEffect(deletedTask) {
-        if (deletedTask != null) {
+        val taskToProcess = deletedTask
+        if (taskToProcess != null) {
             val result = snackbarHostState.showSnackbar(
-                message = "Task \"${deletedTask?.title}\" deleted",
+                message = "Task \"${taskToProcess.title}\" deleted",
                 actionLabel = "Undo",
                 duration = SnackbarDuration.Short
             )
@@ -92,6 +102,12 @@ fun MainScreen(
                         selected = selectedSmartSection == section,
                         onClick = {
                             viewModel.setSmartSection(section)
+                            if (canNavigateBack) {
+                                scope.launch {
+                                    navigator.navigateBack()
+                                }
+                                viewModel.selectTask(null)
+                            }
                             scope.launch { drawerState.close() }
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -166,7 +182,7 @@ fun MainScreen(
                         onTaskClick = { task ->
                             viewModel.selectTask(task)
                             scope.launch {
-                                navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+                                navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, task.id)
                             }
                         },
                         onCheckedChange = { task, _ ->
@@ -183,11 +199,24 @@ fun MainScreen(
                 detailPane = {
                     TaskDetailScreen(
                         task = selectedTask,
+                        onBackClick = if (canNavigateBack) {
+                            {
+                                scope.launch {
+                                    navigator.navigateBack()
+                                }
+                                viewModel.selectTask(null)
+                            }
+                        } else null,
                         onEditTask = { task ->
                             viewModel.showEditDialog(task)
                         },
                         onDeleteTask = { task ->
                             viewModel.deleteTask(task)
+                            if (canNavigateBack) {
+                                scope.launch {
+                                    navigator.navigateBack()
+                                }
+                            }
                         },
                         onToggleCompletion = { task ->
                             viewModel.toggleTaskCompletion(task)

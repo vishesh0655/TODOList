@@ -97,6 +97,20 @@ class TaskViewModelTest {
     }
 
     @Test
+    fun testTaskDeletionClearsSelectedTask() = runBlocking {
+        val task = Task(title = "Task to select and delete")
+        viewModel.addTask(task)
+        val insertedTask = viewModel.tasks.first { it.size == 1 }[0]
+
+        viewModel.selectTask(insertedTask)
+        assertEquals(insertedTask, viewModel.selectedTask.value)
+
+        viewModel.deleteTask(insertedTask)
+        assertEquals(null, viewModel.selectedTask.value)
+        assertEquals(insertedTask, viewModel.deletedTask.value)
+    }
+
+    @Test
     fun testThemeSettings() {
         viewModel.setThemeAccent(ThemeAccent.BLUE)
         assertEquals(ThemeAccent.BLUE, viewModel.themeAccent.value)

@@ -4,9 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,8 +37,8 @@ fun TaskListScreen(
     onTaskClick: (Task) -> Unit,
     onCheckedChange: (Task, Boolean) -> Unit,
     onStarClick: (Task) -> Unit,
-    onAddTaskClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAddTaskClick: () -> Unit = {}
 ) {
     var showSortMenu by remember { mutableStateOf(false) }
 
@@ -70,7 +69,7 @@ fun TaskListScreen(
 
             Box {
                 IconButton(onClick = { showSortMenu = true }) {
-                    Icon(Icons.Default.Sort, contentDescription = "Sort tasks")
+                    Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = "Sort tasks")
                 }
 
                 DropdownMenu(
